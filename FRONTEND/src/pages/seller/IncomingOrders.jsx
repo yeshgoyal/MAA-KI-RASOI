@@ -1,47 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../api/axios';
 import OrderCard from '../../Components/ui/OrderCard';
 import LoadingSpinner from '../../Components/ui/LoadingSpinner';
 import EmptyState from '../../Components/ui/EmptyState';
 import toast from 'react-hot-toast';
 import { FiClock, FiCheck, FiX } from 'react-icons/fi';
-import { useAuth } from '../../context/AuthContext';
 
 const IncomingOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { socket } = useAuth();
+  const prevOrderCountRef = useRef(0);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     fetchOrders();
+    // Poll every 20 seconds for new incoming orders
+    intervalRef.current = setInterval(fetchOrders, 20000);
+    return () => clearInterval(intervalRef.current);
   }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-    
-    const handleNewOrder = (order) => {
-      setOrders(prev => [order, ...prev]);
-      toast('You received a new order!', { icon: '🔔' });
-    };
-
-    const handleUpdate = (updatedOrder) => {
-      setOrders((prev) => prev.map(o => o._id === updatedOrder._id ? updatedOrder : o));
-    };
-    
-    socket.on('newOrder', handleNewOrder);
-    socket.on('orderStatusUpdate', handleUpdate);
-    
-    return () => {
-      socket.off('newOrder', handleNewOrder);
-      socket.off('orderStatusUpdate', handleUpdate);
-    };
-  }, [socket]);
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const { data } = await api.get('/orders/cook');
-      setOrders(data.orders || []);
+      const newOrders = data.orders || [];
+      // Alert seller if a new order arrived since last poll
+      if (prevOrderCountRef.current > 0 && newOrders.length > prevOrderCountRef.current) {
+        toast('🔔 You received a new order!', { icon: '🍲' });
+      }
+      prevOrderCountRef.current = newOrders.length;
+      setOrders(newOrders);
     } catch (err) {
       console.error('Failed to fetch outgoing orders', err);
     } finally {

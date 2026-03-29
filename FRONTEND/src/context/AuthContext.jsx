@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
 import { toast } from 'react-hot-toast';
-import { io } from 'socket.io-client';
+
 
 const AuthContext = createContext();
 
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [socket, setSocket] = useState(null);
+
 
   // Load user from local storage on mount
   useEffect(() => {
@@ -26,17 +26,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (user && !socket) {
-      const newSocket = io('https://maa-ki-rasoi-one.vercel.app'); // Ensure this matches backend url
-      setSocket(newSocket);
-      newSocket.emit('joinRoom', user._id);
-      return () => newSocket.close();
-    } else if (!user && socket) {
-      socket.close();
-      setSocket(null);
-    }
-  }, [user]);
 
   const login = async (email, password) => {
     try {
@@ -101,7 +90,6 @@ export const AuthProvider = ({ children }) => {
     isStudent: user?.role === 'student',
     isProfessional: user?.role === 'professional',
     isAdmin: user?.role === 'admin',
-    socket
   };
 
   return (

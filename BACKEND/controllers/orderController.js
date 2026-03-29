@@ -72,7 +72,9 @@ const getOrderById = async (req, res) => {
     if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
     
     let isAuthorized = false;
-    if (order.userId.toString() === req.user._id.toString()) isAuthorized = true;
+    const orderUserId = order.userId._id ? order.userId._id.toString() : order.userId.toString();
+    
+    if (orderUserId === req.user._id.toString()) isAuthorized = true;
     else if (req.user.role === 'admin') isAuthorized = true;
     else if (order.cookId && order.cookId.userId && order.cookId.userId._id.toString() === req.user._id.toString()) isAuthorized = true;
 
@@ -101,10 +103,6 @@ const updateOrderStatus = async (req, res) => {
       await Cook.findByIdAndUpdate(order.cookId, { $inc: { totalEarnings: order.finalAmount } });
     }
     await order.save();
-    
-    if (req.io) {
-      req.io.to(order.userId.toString()).emit('orderStatusUpdate', order);
-    }
     
     res.json({ success: true, order });
   } catch (error) {
@@ -208,13 +206,6 @@ const verifyRazorpayPayment = async (req, res) => {
         }
       } catch (err) {
         console.error('Error sending emails', err);
-      }
-
-      if (req.io) {
-        req.io.to(req.user._id.toString()).emit('orderStatusUpdate', dbOrder);
-        if (cookDoc && cookDoc.userId) {
-          req.io.to(cookDoc.userId._id.toString()).emit('newOrder', dbOrder);
-        }
       }
 
       res.status(200).json({ success: true, order: dbOrder });

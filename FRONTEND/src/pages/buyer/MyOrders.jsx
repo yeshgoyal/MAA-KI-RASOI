@@ -1,32 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../api/axios';
 import OrderCard from '../../Components/ui/OrderCard';
 import LoadingSpinner from '../../Components/ui/LoadingSpinner';
 import EmptyState from '../../Components/ui/EmptyState';
 import { FiShoppingBag } from 'react-icons/fi';
-import { useAuth } from '../../context/AuthContext';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { socket } = useAuth();
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     fetchOrders();
+    // Poll every 30 seconds for order updates
+    intervalRef.current = setInterval(fetchOrders, 30000);
+    return () => clearInterval(intervalRef.current);
   }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-    
-    const handleUpdate = (updatedOrder) => {
-      setOrders((prev) => prev.map(o => o._id === updatedOrder._id ? updatedOrder : o));
-    };
-    
-    socket.on('orderStatusUpdate', handleUpdate);
-    return () => {
-      socket.off('orderStatusUpdate', handleUpdate);
-    };
-  }, [socket]);
 
   const fetchOrders = async () => {
     try {

@@ -16,23 +16,6 @@ const uploadRoutes = require('./routes/uploadRoutes');
 
 const app = express();
 
-const http = require('http');
-const { Server } = require('socket.io');
-const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: '*' } });
-
-// Expose io object to all routes
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
-
-io.on('connection', (socket) => {
-  socket.on('joinRoom', (room) => {
-    socket.join(room);
-  });
-});
-
 // Middleware
 app.use(cors("*"));
 app.use(express.json({ limit: '10mb' }));
@@ -74,7 +57,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
 
