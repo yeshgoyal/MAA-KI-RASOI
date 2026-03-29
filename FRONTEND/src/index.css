@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #FFF8F0;
+  --color-primary-100: #FFE5D4;
+  --color-primary-200: #FFCBA8;
+  --color-primary-300: #FFAB73;
+  --color-primary-400: #FF8A3D;
+  --color-primary-500: #E85D26; /* Saffron Orange */
+  --color-primary-600: #C24A1A;
+  --color-primary-700: #9C3911;
+  
+  --color-secondary-50: #E6F3EE;
+  --color-secondary-100: #C1E1D4;
+  --color-secondary-200: #99CEBA;
+  --color-secondary-300: #6FB99E;
+  --color-secondary-400: #4AA483;
+  --color-secondary-500: #2D6A4F; /* Tulsi Green */
+  --color-secondary-600: #22513C;
+  
+  --color-accent-400: #FFD166;
+  --color-accent-500: #FFB703; /* Haldi Yellow */
+  --color-accent-600: #E09F00;
+
+  --color-surface-light: #FFF8F0; /* Cream background */
+  --color-surface-dark: #1A1208;
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Outfit', system-ui, sans-serif;
+}
+
+@layer base {
+  :root {
+    --bg-main: #FFF8F0;
+    --text-main: #2A2421;
+    --text-muted: #6B615A;
+    --border-light: #EAd8C7;
+  }
+
+  /* We won't do fully inverted dark mode by default because food apps usually look better light/warm, 
+     but we can provide a nice sepia-dark theme later if needed */
+  .dark {
+    --bg-main: #1A1208;
+    --text-main: #F4EBE1;
+    --text-muted: #A39B94;
+    --border-light: #3D352F;
+  }
+}
+
+html, body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Custom Scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FFB703;
+}
+
+/* Utility Animations */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dark .glass-panel {
+  background: rgba(26, 18, 8, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
