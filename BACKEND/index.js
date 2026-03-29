@@ -57,6 +57,11 @@ app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'MaaKeHaathKaKhana API is running 🍲', timestamp: new Date() });
 });
 
+// Root welcome route
+app.get('/', (req, res) => {
+  res.send('Welcome to MaaKeHaathKaKhana API! 🍲 API is running successfully.');
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
@@ -72,3 +77,5 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
+
+module.exports = app;
