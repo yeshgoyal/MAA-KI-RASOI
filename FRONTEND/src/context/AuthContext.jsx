@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (user && !socket) {
-      const newSocket = io('http://localhost:5000'); // Ensure this matches backend url
+      const newSocket = io('https://maa-ki-rasoi-one.vercel.app'); // Ensure this matches backend url
       setSocket(newSocket);
       newSocket.emit('joinRoom', user._id);
       return () => newSocket.close();
